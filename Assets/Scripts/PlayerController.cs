@@ -2,15 +2,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-<<<<<<< HEAD
-    public float moveSpeed = 5f;
-    public float jumpForce = 8f;
-    private Rigidbody2D rb;
-    private bool isGrounded;
-
-    void Start()
-    {
-=======
     // Public variables appear in the Inspector, so you can tweak them without editing code.
     public float moveSpeed = 4f;       // How fast the player moves left/right
     
@@ -27,48 +18,11 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         // Grab the Rigidbody2D attached to the Player object once at the start.
->>>>>>> origin/feature-player-matheus
         rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-<<<<<<< HEAD
-        Move();
-        Jump();
-    }
-
-    void Move()
-    {
-        float moveInput = Input.GetAxis("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
-    }
-
-    void Jump()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            isGrounded = true;
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            isGrounded = false;
-        }
-    }
-}
-=======
         // --- Horizontal movement ---
         // Get input from keyboard (A/D or Left/Right arrows).
         float moveInput = Input.GetAxis("Horizontal");
@@ -92,4 +46,3 @@ public class PlayerController : MonoBehaviour
         */
     }
 }
->>>>>>> origin/feature-player-matheus
