@@ -2,46 +2,71 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 4f;
-    public float jumpForce = 8f;
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
-    public LayerMask groundLayer;
+    // Public variables appear in the Inspector, so you can tweak them without editing code.
+    public float moveSpeed = 4f;       // How fast the player moves left/right
 
-    private Rigidbody2D rb;
-    private Animator anim;
-    private SpriteRenderer spriteRenderer;
-    private bool isGrounded;
+    //Jump realated variables for the Jump Feature (later)
+    public float jumpForce = 5.5f;      // How strong the jump is (vertical speed)
+    public Transform groundCheck;      // Empty child object placed at the player's feet
+    public float groundCheckRadius = 0.2f; // Size of the circle used to detect ground
+    public LayerMask groundLayer;      // Which layer counts as "ground" (set in Inspector)
+    private Vector3 startPosition;  // where the player starts
+    public float fallLimit = -6f;   // y-value that counts as "game over"
+    public float topLimit = 6f;   // Y level above the screen
+
+
+
+
+    // Private variables are used internally by the script.
+    private Rigidbody2D rb;            // Reference to the Rigidbody2D component
+    private bool isGrounded;           // True if player is standing on ground
 
     void Start()
     {
+        // Grab the Rigidbody2D attached to the Player object once at the start.
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        startPosition = transform.position;
+
     }
 
     void Update()
     {
+        // --- Horizontal movement ---
+        // Get input from keyboard (A/D or Left/Right arrows).
         float moveInput = Input.GetAxis("Horizontal");
+        // Apply horizontal speed while keeping the current vertical velocity.
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
-        // Ground check
+        // Jump realated code for the Jump Feature (later)
+        // --- Ground check ---
+        // Create an invisible circle at the GroundCheck position.
+        // If this circle overlaps any collider on the "Ground" layer, player is grounded.
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Jump
+        // --- Jump ---
+        // If player is grounded AND the Jump button (Spacebar by default) is pressed:
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
+            // Set vertical velocity to jumpForce (launch upward).
+            // Horizontal velocity stays the same.
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
-        // Animator parameters
-        anim.SetFloat("Speed", Mathf.Abs(moveInput));
-        anim.SetBool("isJumping", !isGrounded);
+        // Respawn if player falls below the screen
+        if (transform.position.y < fallLimit)
+        {
+            transform.position = startPosition;
+            rb.linearVelocity = Vector2.zero; // stop any leftover motion
+        }
 
-        // Flip sprite
-        if (moveInput > 0)
-            spriteRenderer.flipX = false;
-        else if (moveInput < 0)
-            spriteRenderer.flipX = true;
+        // Respawn if player goes above the screen
+        if (transform.position.y > topLimit)
+        {
+            transform.position = startPosition;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+
+
     }
 }
