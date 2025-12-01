@@ -14,19 +14,22 @@ public class PlayerController : MonoBehaviour
     public float fallLimit = -6f;   // y-value that counts as "game over"
     public float topLimit = 6f;   // Y level above the screen
 
-
-
-
     // Private variables are used internally by the script.
     private Rigidbody2D rb;            // Reference to the Rigidbody2D component
     private bool isGrounded;           // True if player is standing on ground
+    private Animator anim;
+    private SpriteRenderer spriteRenderer;
+    private int extraJumps;
+    public int extraJumpsValue = 1; // Allows one double jump
 
     void Start()
     {
         // Grab the Rigidbody2D attached to the Player object once at the start.
         rb = GetComponent<Rigidbody2D>();
         startPosition = transform.position;
-
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        extraJumps = extraJumpsValue;
     }
 
     void Update()
@@ -37,18 +40,30 @@ public class PlayerController : MonoBehaviour
         // Apply horizontal speed while keeping the current vertical velocity.
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
+        // --- Flip the player based on movement direction ---
+        if (moveInput != 0)
+        {
+            spriteRenderer.flipX = moveInput < 0;
+        }
+
         // Jump realated code for the Jump Feature (later)
         // --- Ground check ---
         // Create an invisible circle at the GroundCheck position.
         // If this circle overlaps any collider on the "Ground" layer, player is grounded.
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // --- Jump ---
-        // If player is grounded AND the Jump button (Spacebar by default) is pressed:
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (isGrounded)
         {
-            // Set vertical velocity to jumpForce (launch upward).
-            // Horizontal velocity stays the same.
+            extraJumps = extraJumpsValue;
+        }
+
+        if (Input.GetButtonDown("Jump") && extraJumps > 0)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            extraJumps--;
+        }
+        else if (Input.GetButtonDown("Jump") && extraJumps == 0 && isGrounded)
+        {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
@@ -66,7 +81,8 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-
-
+        // --- Animation handling ---
+        anim.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
+        anim.SetBool("isJumping", !isGrounded);
     }
 }
