@@ -1,0 +1,89 @@
+/*using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public float speed = 2f;          // horizontal speed
+    public float moveDistance = 1f;   // patrol distance from start position
+
+    private Rigidbody2D rb;
+    private float leftBoundary;
+    private float rightBoundary;
+    private int direction = 1;        // 1 = right, -1 = left
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+
+        float startX = transform.position.x;
+        leftBoundary = startX - moveDistance;
+        rightBoundary = startX + moveDistance;
+    }
+
+    void Update()
+    {
+        // Move horizontally only
+        rb.linearVelocity = new Vector2(direction * speed, 0f);
+
+        // Flip direction at boundaries
+        if (direction > 0 && transform.position.x >= rightBoundary)
+        {
+            transform.position = new Vector2(rightBoundary, transform.position.y);
+            direction = -1;
+        }
+        else if (direction < 0 && transform.position.x <= leftBoundary)
+        {
+            transform.position = new Vector2(leftBoundary, transform.position.y);
+            direction = 1;
+        }
+    }
+}
+*/
+
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public float speed = 2f;          // horizontal speed
+    public float moveDistance = 1f;   // patrol distance from start position
+
+    private Rigidbody2D rb;
+    private float leftBoundary;
+    private float rightBoundary;
+    private int direction = -1;        // 1 = right, -1 = left
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+
+        float startX = transform.position.x;
+        leftBoundary = startX - moveDistance;
+        rightBoundary = startX + moveDistance;
+    }
+
+    void Update()
+    {
+        // Move horizontally only
+        rb.linearVelocity = new Vector2(direction * speed, 0f);
+
+        // Flip direction at boundaries
+        if (direction > 0 && transform.position.x >= rightBoundary)
+        {
+            transform.position = new Vector2(rightBoundary, transform.position.y);
+            direction = -1;
+            Flip();
+        }
+        else if (direction < 0 && transform.position.x <= leftBoundary)
+        {
+            transform.position = new Vector2(leftBoundary, transform.position.y);
+            direction = 1;
+            Flip();
+        }
+    }
+
+    private void Flip()
+    {
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;               // reverse X scale
+        transform.localScale = scale;
+    }
+}
